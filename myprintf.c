@@ -207,9 +207,10 @@ void myscanf(char * format, ... ) {
 int main() {
     char * tekst = malloc(1024 * sizeof(char));
     int wiek;
+    int wzrost;
     myprintf("%s ma %d lat (hex: %x), a jego tata %s ma %d lat (bin: %b)\n", "Adrian", 21, 21, "Damian", 45, 45);
 
-    myscanf("%d%s", &wiek, &tekst);
-    printf("%i lat %s\n", wiek, tekst);
+    myscanf("%d%s%d", &wiek, &tekst, &wzrost);
+    myprintf("%d lat %s i wzrostu %d\n", wiek, tekst, wzrost);
     return 0;
 }
