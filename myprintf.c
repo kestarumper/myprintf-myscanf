@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <math.h>
 
 int mystrlen(const char * str) {
     int result = 0;
@@ -78,6 +79,40 @@ char * inttostring(int a, int base) {
     return result;
 }
 
+int stringToInt(char * a, int base) {
+    int result = 0;
+    int sign = 1;
+
+    int length = mystrlen(a);
+
+    if(a[length-1] == '\n') {
+        a[length-1] = '\0';
+        length--;
+    }
+
+    if(a[0] == '-') {
+        a++;
+        sign = -1;
+        length--;
+    }
+
+    char digit;
+    int power;
+
+    for(int i = 0; i < length; i++) {
+        digit = a[length-i-1];
+        if(digit >= 'A') {
+            digit -= 'A';
+        } else {
+            digit -= '0';
+        }
+
+        result += pow(base, i) * ((int)digit);
+    }
+
+    return result * sign;
+}
+
 void myprintf(char * format, ... ) {
     char * p = (((char*)&format) + sizeof(format));
 
@@ -126,7 +161,55 @@ void myprintf(char * format, ... ) {
     write(1, format, mystrlen(format));
 }
 
+void myscanf(char * format, ... ) {
+    char * p = (((char*)&format) + sizeof(format));
+
+    char * input = malloc(1024 * sizeof(char));
+
+    int * arg1;
+    char ** arg2;
+    
+    int percent = myfind('%', format);
+    int whitechar;
+    char option;
+
+    read(STDIN_FILENO, input, 1024);
+
+    while(percent != -1) {
+        option = *(format + percent + 1);
+
+        whitechar = myfind(' ', input);
+
+        if(whitechar >= 0) {
+            *(input+whitechar) = '\0';
+        }
+
+        switch(option) {
+            case 'd':
+                arg1 = *((int*)p);
+                p += sizeof(int);
+                *arg1 = stringToInt(input, 10);
+                break;
+            case 's':
+                arg2 = *((char**)p);
+                p += sizeof(char*);
+                *arg2 = input;
+                break;
+        }
+
+        format += percent + 2;
+        input += whitechar + 1;
+
+        percent = myfind('%', format);
+    }
+}
+
 int main() {
+    char * tekst = malloc(1024 * sizeof(char));
+    int wiek;
     myprintf("%s ma %d lat (hex: %x), a jego tata %s ma %d lat (bin: %b)\n", "Adrian", 21, 21, "Damian", 45, 45);
+
+    myscanf("%d%s", &wiek, &tekst);
+    printf("%i lat %s\n", wiek, tekst);
     return 0;
 }

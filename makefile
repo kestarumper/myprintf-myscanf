@@ -1,2 +1,2 @@
 all:
-	gcc -g zad1.c -o zad1.exe -m32
+	gcc -g myprintf.c -o myprintf.exe -m32 -lm
